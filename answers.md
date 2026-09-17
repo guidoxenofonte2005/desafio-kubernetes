@@ -15,3 +15,6 @@
 ![alt text](images/step_01/get_pod.png)
 ![alt text](images/step_01/describe_pod.png)
 ![alt text](images/step_01/logs_pod.png)
+### Deleção e Análise
+![alt text](images/step_01/delete.png)
+Ao deletar um Pod avulso, ele não volta automaticamente, pois não há nenhum provedor/gerenciador para analisar se a quantidade de Pods mínima está suprida.
