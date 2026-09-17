@@ -1,0 +1,5 @@
+# Crie um namespace próprio e suba um Pod avulso de teste
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: desafio
