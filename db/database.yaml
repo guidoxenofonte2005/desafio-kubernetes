@@ -1,0 +1,18 @@
+apiVersion: postgrest/postgrest
+kind: Pod
+metadata:
+  name: database
+  labels:
+    app: database
+spec:
+  containers:
+    - image: postgres:16
+      name: database
+      env:
+        - name: POSTGRES_USER
+          value: postgres
+        - name: POSTGRES_PASSWORD
+          value: postgres
+      ports:
+      - name: database
+        port: 5432
