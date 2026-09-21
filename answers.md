@@ -18,3 +18,20 @@
 ### Deleção e Análise
 ![alt text](images/step_01/delete.png)
 Ao deletar um Pod avulso, ele não volta automaticamente, pois não há nenhum provedor/gerenciador para analisar se a quantidade de Pods mínima está suprida.
+
+## Etapa 02: Banco de Dados com Persistência
+> Implante o PostgreSQL no cluster. Ele precisa de armazenamento que não desapareça quando o Pod for recriado — pesquise como reservar armazenamento e montá-lo no diretório de dados do Postgres. Também precisa de um Service para que outros recursos consigam encontrá-lo pelo nome.
+
+### Criação do Armazenamento Persistente
+![alt text](images/step_02/pv.png)
+![alt text](images/step_02/volume-claim.png)
+### Criação do Service
+![alt text](images/step_02/service.png)
+### Criação do Deployment
+![alt text](images/step_02/deployment.png)
+### Execução e Análise
+![alt text](images/step_02/creation.png)
+### Perguntas:
+> Qual a diferença entre montar um PVC e um emptyDir? O que aconteceria com os dados em cada caso ao deletar o Pod?
+- **PVC**: os dados são mantidos após deletar o pod.
+- **EmptyDir**: os dados são deletados juntamente com o pod.
