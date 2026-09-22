@@ -47,8 +47,11 @@ Ao deletar um Pod avulso, ele não volta automaticamente, pois não há nenhum p
 ![alt text](images/step_03/terminal.png)
 > Dados obtidos logo após rodar os comandos `kubectl create -f manifests/postgres-secret.yaml -n desafio` e `kubectl create -f manifests/postgres-configmap.yaml -n desafio`
 
-## Etapa 04: A API Conectada ao Banco
-> Implante a API (PostgREST) como um Deployment. Ela se configura por variáveis de ambiente — precisa da string de conexão com o banco, que deve apontar para o nome do Service do PostgreSQL (não um IP). Reaproveite o usuário e a senha do Secret do nível anterior. Crie uma tabela no banco e confirme que a API expõe essa tabela via HTTP.
+## Etapas 04 e 05: A API Conectada ao Banco / Expor a API e Provar a Persistência
+> 04. Implante a API (PostgREST) como um Deployment. Ela se configura por variáveis de ambiente — precisa da string de conexão com o banco, que deve apontar para o nome do Service do PostgreSQL (não um IP). Reaproveite o usuário e a senha do Secret do nível anterior. Crie uma tabela no banco e confirme que a API expõe essa tabela via HTTP.
+
+> 05. Exponha a API para você conseguir acessá-la da sua máquina. Faça uma requisição que insira um dado através da API e outra que leia esse dado de volta. Em seguida, delete o Pod do PostgreSQL, espere o cluster recriá-lo, e consulte a API novamente.
+
 
 ### Criação do Deployment da API
 ![alt text](images/step_04/deployment.png)
@@ -60,6 +63,10 @@ Ao deletar um Pod avulso, ele não volta automaticamente, pois não há nenhum p
 ![alt text](images/step_04/test_part1.png)
 
 ![alt text](images/step_04/test_part2.png)
+### Deleção do Pod, Recriação e Teste de Persistência
+![alt text](images/step_05/destroy.png)
 ### Perguntas
 > Por que usamos o nome do Service do Postgres na string de conexão, em vez do IP do Pod? O que aconteceria com a conexão se você usasse o IP e o Pod do banco fosse recriado?
 - Pois é possível reencontrar o Service a partir do nome mesmo com o Pod sendo destruído e recriado. Ao destruir/recriar um Pod, é possível (e provável) que seu IP mude, ocasionando uma perda de conexão com o mesmo. Já com o nome do Service, é possível reencontrar o serviço assim que o mesmo estiver disponível novamente.
+> Quantos componentes tiveram que funcionar em conjunto para esse dado sobreviver? (PVC, Deployment, Service, Secret, a API...) O que isso mostra sobre como o Kubernetes coordena as peças?
+- De forma prática, todos os componentes precisaram funcionar em conjunto para que o dado persistisse. O PV e o PVC são ligados ao Deployment principal, o Secret e o ConfigMap permitem a reconfiguração correta do Pod ao reiniciá-lo, o Service permite reencontrar o Pod sem necessidade de configuração de um IP fixo e a API permite o acesso e criação de novos dados. Desta forma, o Kubernetes permite uma coordenação de tudo de maneira integrada e conectando diferentes partes referenciando umas as outras.
