@@ -46,3 +46,20 @@ Ao deletar um Pod avulso, ele não volta automaticamente, pois não há nenhum p
 ### Execução e Análise
 ![alt text](images/step_03/terminal.png)
 > Dados obtidos logo após rodar os comandos `kubectl create -f manifests/postgres-secret.yaml -n desafio` e `kubectl create -f manifests/postgres-configmap.yaml -n desafio`
+
+## Etapa 04: A API Conectada ao Banco
+> Implante a API (PostgREST) como um Deployment. Ela se configura por variáveis de ambiente — precisa da string de conexão com o banco, que deve apontar para o nome do Service do PostgreSQL (não um IP). Reaproveite o usuário e a senha do Secret do nível anterior. Crie uma tabela no banco e confirme que a API expõe essa tabela via HTTP.
+
+### Criação do Deployment da API
+![alt text](images/step_04/deployment.png)
+### Criação do Service da API
+![alt text](images/step_04/service.png)
+### Execução e Análise
+![alt text](images/step_04/creation.png)
+
+![alt text](images/step_04/test_part1.png)
+
+![alt text](images/step_04/test_part2.png)
+### Perguntas
+> Por que usamos o nome do Service do Postgres na string de conexão, em vez do IP do Pod? O que aconteceria com a conexão se você usasse o IP e o Pod do banco fosse recriado?
+- Pois é possível reencontrar o Service a partir do nome mesmo com o Pod sendo destruído e recriado. Ao destruir/recriar um Pod, é possível (e provável) que seu IP mude, ocasionando uma perda de conexão com o mesmo. Já com o nome do Service, é possível reencontrar o serviço assim que o mesmo estiver disponível novamente.

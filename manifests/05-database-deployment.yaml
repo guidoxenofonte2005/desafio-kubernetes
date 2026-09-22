@@ -34,6 +34,11 @@ spec:
                 configMapKeyRef:
                   name: postgres-configmap
                   key: POSTGRES_DB
+            - name: PGDATA
+              valueFrom:
+                configMapKeyRef:
+                  name: postgres-configmap
+                  key: PGDATA
           volumeMounts:
             - name: postgres-storage
               mountPath: /var/lib/postgresql/data
