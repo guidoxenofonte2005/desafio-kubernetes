@@ -82,3 +82,21 @@ Ao deletar um Pod avulso, ele não volta automaticamente, pois não há nenhum p
 - Liveness: analisa se o container está vivo ou congelado/travado. Em caso de falha repetida, mata o container e o reinicia.
 - Readiness: analisa se o container está pronto para receber tráfego. Caso não, o Pod é removido dos endpoints do Service até que seja capaz de receber tráfego.
 - Escalar a API é possível pois isso apenas faria a distribuição de carga das requisições entre os diferentes Pods, enquanto o banco não pode fazer isso por questões de segurança (possível corrupção dos dados em caso de escrita/leitura múltipla), além de apenas um PVC poder ser montado por node por vez.
+
+## Etapa 07: Bônus - Escalonamento Automático
+> Configure um Horizontal Pod Autoscaler (HPA) para a API, escalando conforme o uso de CPU. Gere carga com uma ferramenta de sua escolha e observe o cluster criar novos Pods automaticamente — e removê-los quando a carga cair.
+
+### Configuração do Minikube
+![alt text](images/step_07/minikube.png)
+### Criação do Autoscaler
+![alt text](images/step_07/api-autoscale.png)
+### Teste de Stress
+![alt text](images/step_07/apache.png)
+#### Estado antes do teste
+![alt text](images/step_07/before.png)
+#### Estados durante o teste
+![alt text](images/step_07/during.png)
+
+![alt text](images/step_07/even_more.png)
+#### Estado após o teste
+![alt text](images/step_07/less.png)
