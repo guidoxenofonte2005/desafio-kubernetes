@@ -35,3 +35,14 @@ Ao deletar um Pod avulso, ele não volta automaticamente, pois não há nenhum p
 > Qual a diferença entre montar um PVC e um emptyDir? O que aconteceria com os dados em cada caso ao deletar o Pod?
 - **PVC**: os dados são mantidos após deletar o pod.
 - **EmptyDir**: os dados são deletados juntamente com o pod.
+
+## Etapa 03: Configuração e Segredos
+> As credenciais do PostgreSQL (usuário e senha) não podem estar escritas dentro do YAML do Deployment. Mova-as para um Secret e injete no container do banco. Coloque também alguma configuração não sensível em um ConfigMap. Esse mesmo Secret será reutilizado pela API no próximo nível.
+
+### Criação do Secret
+![alt text](images/step_03/secret.png)
+### Criação do ConfigMap
+![alt text](images/step_03/configmap.png)
+### Execução e Análise
+![alt text](images/step_03/terminal.png)
+> Dados obtidos logo após rodar os comandos `kubectl create -f manifests/postgres-secret.yaml -n desafio` e `kubectl create -f manifests/postgres-configmap.yaml -n desafio`
