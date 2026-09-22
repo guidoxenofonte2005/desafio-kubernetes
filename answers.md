@@ -52,7 +52,6 @@ Ao deletar um Pod avulso, ele não volta automaticamente, pois não há nenhum p
 
 > 05. Exponha a API para você conseguir acessá-la da sua máquina. Faça uma requisição que insira um dado através da API e outra que leia esse dado de volta. Em seguida, delete o Pod do PostgreSQL, espere o cluster recriá-lo, e consulte a API novamente.
 
-
 ### Criação do Deployment da API
 ![alt text](images/step_04/deployment.png)
 ### Criação do Service da API
@@ -70,3 +69,16 @@ Ao deletar um Pod avulso, ele não volta automaticamente, pois não há nenhum p
 - Pois é possível reencontrar o Service a partir do nome mesmo com o Pod sendo destruído e recriado. Ao destruir/recriar um Pod, é possível (e provável) que seu IP mude, ocasionando uma perda de conexão com o mesmo. Já com o nome do Service, é possível reencontrar o serviço assim que o mesmo estiver disponível novamente.
 > Quantos componentes tiveram que funcionar em conjunto para esse dado sobreviver? (PVC, Deployment, Service, Secret, a API...) O que isso mostra sobre como o Kubernetes coordena as peças?
 - De forma prática, todos os componentes precisaram funcionar em conjunto para que o dado persistisse. O PV e o PVC são ligados ao Deployment principal, o Secret e o ConfigMap permitem a reconfiguração correta do Pod ao reiniciá-lo, o Service permite reencontrar o Pod sem necessidade de configuração de um IP fixo e a API permite o acesso e criação de novos dados. Desta forma, o Kubernetes permite uma coordenação de tudo de maneira integrada e conectando diferentes partes referenciando umas as outras.
+
+## Etapa 06: Health Checks e Escala
+> Adicione liveness e readiness probes à API, para que o Kubernetes saiba quando reiniciá-la e quando ela está pronta para receber tráfego. Defina também requests e limits de CPU e memória. Aumente o número de réplicas da API e observe o Service balancear a carga entre elas.
+
+### Adição de Liveness e Readiness Probes
+![alt text](images/step_06/deployment_updated.png)
+### Análise da Criação
+![alt text](images/step_06/command.png)
+### Perguntas
+> Qual a diferença prática entre liveness e readiness? Por que escalar a API para várias réplicas é seguro, mas escalar o banco desse jeito (com o mesmo PVC) não seria?
+- Liveness: analisa se o container está vivo ou congelado/travado. Em caso de falha repetida, mata o container e o reinicia.
+- Readiness: analisa se o container está pronto para receber tráfego. Caso não, o Pod é removido dos endpoints do Service até que seja capaz de receber tráfego.
+- Escalar a API é possível pois isso apenas faria a distribuição de carga das requisições entre os diferentes Pods, enquanto o banco não pode fazer isso por questões de segurança (possível corrupção dos dados em caso de escrita/leitura múltipla), além de apenas um PVC poder ser montado por node por vez.
