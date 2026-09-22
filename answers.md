@@ -47,8 +47,11 @@ Ao deletar um Pod avulso, ele não volta automaticamente, pois não há nenhum p
 ![alt text](images/step_03/terminal.png)
 > Dados obtidos logo após rodar os comandos `kubectl create -f manifests/postgres-secret.yaml -n desafio` e `kubectl create -f manifests/postgres-configmap.yaml -n desafio`
 
-## Etapa 04: A API Conectada ao Banco
-> Implante a API (PostgREST) como um Deployment. Ela se configura por variáveis de ambiente — precisa da string de conexão com o banco, que deve apontar para o nome do Service do PostgreSQL (não um IP). Reaproveite o usuário e a senha do Secret do nível anterior. Crie uma tabela no banco e confirme que a API expõe essa tabela via HTTP.
+## Etapas 04 e 05: A API Conectada ao Banco / Expor a API e Provar a Persistência
+> 04. Implante a API (PostgREST) como um Deployment. Ela se configura por variáveis de ambiente — precisa da string de conexão com o banco, que deve apontar para o nome do Service do PostgreSQL (não um IP). Reaproveite o usuário e a senha do Secret do nível anterior. Crie uma tabela no banco e confirme que a API expõe essa tabela via HTTP.
+
+> 05. Exponha a API para você conseguir acessá-la da sua máquina. Faça uma requisição que insira um dado através da API e outra que leia esse dado de volta. Em seguida, delete o Pod do PostgreSQL, espere o cluster recriá-lo, e consulte a API novamente.
+
 
 ### Criação do Deployment da API
 ![alt text](images/step_04/deployment.png)
@@ -60,6 +63,8 @@ Ao deletar um Pod avulso, ele não volta automaticamente, pois não há nenhum p
 ![alt text](images/step_04/test_part1.png)
 
 ![alt text](images/step_04/test_part2.png)
-### Perguntas
+### Deleção do Pod, Recriação e Teste de Persistência
+
+### Perguntas 
 > Por que usamos o nome do Service do Postgres na string de conexão, em vez do IP do Pod? O que aconteceria com a conexão se você usasse o IP e o Pod do banco fosse recriado?
 - Pois é possível reencontrar o Service a partir do nome mesmo com o Pod sendo destruído e recriado. Ao destruir/recriar um Pod, é possível (e provável) que seu IP mude, ocasionando uma perda de conexão com o mesmo. Já com o nome do Service, é possível reencontrar o serviço assim que o mesmo estiver disponível novamente.
