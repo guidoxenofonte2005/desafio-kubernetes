@@ -6,3 +6,6 @@ metadata:
     app: database
 data:
   POSTGRES_DB: desafio
+  PGDATA: /var/lib/postgresql/data/pgdata
+  PGRST_DB_SCHEMA: public
+  PGRST_DB_ANON_ROLE: postgres
