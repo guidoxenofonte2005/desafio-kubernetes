@@ -30,15 +30,15 @@ A API nunca se conecta ao banco por IP de Pod — ela usa o nome do Service (`da
 
 ## Ferramentas utilizadas
 
-| Ferramenta              | Propósito                                                                                                                                                                                      |
-| ----------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Minikube**            | Cluster Kubernetes local usado para todo o desafio — provê o nó, o `kubectl` já configurado, e os addons necessários (como o `metrics-server`, usado no HPA).                                  |
-| **kubectl**             | CLI de interação com o cluster — aplicação de manifests, inspeção de recursos, execução de comandos dentro dos Pods, e acompanhamento de eventos/logs.                                         |
-| **postgres:16**         | Imagem oficial do PostgreSQL — o banco de dados relacional da stack.                                                                                                                           |
+| Ferramenta | Propósito |
+|---|---|
+| **Minikube** | Cluster Kubernetes local usado para todo o desafio — provê o nó, o `kubectl` já configurado, e os addons necessários (como o `metrics-server`, usado no HPA). |
+| **kubectl** | CLI de interação com o cluster — aplicação de manifests, inspeção de recursos, execução de comandos dentro dos Pods, e acompanhamento de eventos/logs. |
+| **postgres:16** | Imagem oficial do PostgreSQL — o banco de dados relacional da stack. |
 | **postgrest/postgrest** | Imagem que expõe automaticamente uma API REST completa sobre qualquer tabela do PostgreSQL, sem necessidade de escrever código de backend. Configurada inteiramente por variáveis de ambiente. |
-| **metrics-server**      | Addon do cluster que coleta métricas de uso de CPU/memória dos Pods — pré-requisito para o `kubectl top` e para o Horizontal Pod Autoscaler funcionarem.                                       |
-| **Apache Bench (ab)**   | Ferramenta de geração de carga HTTP, usada para testar o Horizontal Pod Autoscaler da API.                                                                                                     |
-| **Git**                 | Versionamento dos manifests e do histórico de evolução do projeto (organizado em branches por etapa: `feature/step_two`, `feature/step_three`, etc.).                                          |
+| **metrics-server** | Addon do cluster que coleta métricas de uso de CPU/memória dos Pods — pré-requisito para o `kubectl top` e para o Horizontal Pod Autoscaler funcionarem. |
+| **Apache Bench (ab)** | Ferramenta de geração de carga HTTP, usada para testar o Horizontal Pod Autoscaler da API. |
+| **Git** | Versionamento dos manifests e do histórico de evolução do projeto (organizado em branches por etapa: `feature/step_two`, `feature/step_three`, etc.). |
 
 ## Estrutura do repositório
 
@@ -54,18 +54,18 @@ desafio-kubernetes/
 
 Os arquivos são numerados propositalmente — `kubectl apply -f manifests/` processa os arquivos em ordem alfabética, e vários recursos dependem de outros já existirem (o namespace precisa existir antes de tudo, o Secret precisa existir antes do Deployment que o referencia, etc.). Numerar os arquivos garante que tudo suba corretamente em uma única execução, mesmo em um ambiente totalmente limpo.
 
-| Arquivo                       | Recurso                 | Propósito                                                                                                                                                                                                      |
-| ----------------------------- | ----------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `00-namespace.yaml`           | Namespace               | Cria o namespace `desafio`, isolando todos os recursos do projeto do restante do cluster.                                                                                                                      |
-| `01-persistent-volume.yaml`   | PersistentVolume        | Reserva um espaço de armazenamento (`hostPath`, 10Gi) no cluster, independente do ciclo de vida de qualquer Pod.                                                                                               |
-| `02-volume-claim.yaml`        | PersistentVolumeClaim   | Solicita e vincula (`Bound`) o armazenamento do PV acima para uso pelo Deployment do banco.                                                                                                                    |
-| `03-postgres-secret.yaml`     | Secret                  | Guarda as credenciais do PostgreSQL (`POSTGRES_USER`, `POSTGRES_PASSWORD`) e a string de conexão completa (`PGRST_DB_URI`) usada pela API — nada disso fica hardcoded nos Deployments.                         |
-| `04-postgres-configmap.yaml`  | ConfigMap               | Guarda configuração não sensível compartilhada entre banco e API: nome do banco (`POSTGRES_DB`), diretório de dados (`PGDATA`), schema (`PGRST_DB_SCHEMA`) e role anônima do PostgREST (`PGRST_DB_ANON_ROLE`). |
-| `05-database-deployment.yaml` | Deployment              | Sobe o container `postgres:16`, injeta credenciais do Secret e configuração do ConfigMap, e monta o volume persistente no diretório de dados do Postgres.                                                      |
-| `06-database-service.yaml`    | Service (ClusterIP)     | Expõe o banco internamente no cluster sob o nome `database`, permitindo que a API o encontre por DNS em vez de IP fixo.                                                                                        |
-| `07-api-deployment.yaml`      | Deployment              | Sobe o container `postgrest/postgrest`, conectado ao banco via `PGRST_DB_URI` (lida do Secret), com `requests`/`limits` de CPU e memória e probes de `liveness`/`readiness` configuradas.                      |
-| `08-api-service.yaml`         | Service (ClusterIP)     | Expõe a API internamente no cluster, servindo de ponto único de acesso e de balanceamento entre réplicas.                                                                                                      |
-| `09-api-autoscale.yaml`       | HorizontalPodAutoscaler | Escala automaticamente as réplicas da API (entre 1 e 10) com base no uso médio de CPU em relação ao que foi definido em `requests`.                                                                            |
+| Arquivo | Recurso | Propósito |
+|---|---|---|
+| `00-namespace.yaml` | Namespace | Cria o namespace `desafio`, isolando todos os recursos do projeto do restante do cluster. |
+| `01-persistent-volume.yaml` | PersistentVolume | Reserva um espaço de armazenamento (`hostPath`, 10Gi) no cluster, independente do ciclo de vida de qualquer Pod. |
+| `02-volume-claim.yaml` | PersistentVolumeClaim | Solicita e vincula (`Bound`) o armazenamento do PV acima para uso pelo Deployment do banco. |
+| `03-postgres-secret.yaml` | Secret | Guarda as credenciais do PostgreSQL (`POSTGRES_USER`, `POSTGRES_PASSWORD`) e a string de conexão completa (`PGRST_DB_URI`) usada pela API — nada disso fica hardcoded nos Deployments. |
+| `04-postgres-configmap.yaml` | ConfigMap | Guarda configuração não sensível compartilhada entre banco e API: nome do banco (`POSTGRES_DB`), diretório de dados (`PGDATA`), schema (`PGRST_DB_SCHEMA`) e role anônima do PostgREST (`PGRST_DB_ANON_ROLE`). |
+| `05-database-deployment.yaml` | Deployment | Sobe o container `postgres:16`, injeta credenciais do Secret e configuração do ConfigMap, e monta o volume persistente no diretório de dados do Postgres. |
+| `06-database-service.yaml` | Service (ClusterIP) | Expõe o banco internamente no cluster sob o nome `database`, permitindo que a API o encontre por DNS em vez de IP fixo. |
+| `07-api-deployment.yaml` | Deployment | Sobe o container `postgrest/postgrest`, conectado ao banco via `PGRST_DB_URI` (lida do Secret), com `requests`/`limits` de CPU e memória e probes de `liveness`/`readiness` configuradas. |
+| `08-api-service.yaml` | Service (ClusterIP) | Expõe a API internamente no cluster, servindo de ponto único de acesso e de balanceamento entre réplicas. |
+| `09-api-autoscale.yaml` | HorizontalPodAutoscaler | Escala automaticamente as réplicas da API (entre 1 e 10) com base no uso médio de CPU em relação ao que foi definido em `requests`. |
 
 ## Como aplicar o projeto
 
@@ -98,6 +98,13 @@ kubectl delete pv pv   # PersistentVolume é cluster-scoped: não é removido ju
 kubectl exec -it -n desafio deploy/database-deployment -- \
   psql -U postgres -d desafio -c "CREATE TABLE items(id serial primary key, nome text);"
 ```
+
+O PostgREST monta o cache de schema apenas na inicialização, então se a API já estava rodando antes dessa tabela existir, qualquer requisição vai retornar `404 PGRST205 (Could not find the table)` até o cache ser atualizado. Recarregue sem precisar reiniciar o Pod:
+```bash
+kubectl exec -it -n desafio deploy/database-deployment -- \
+  psql -U postgres -d desafio -c "NOTIFY pgrst, 'reload schema';"
+```
+(Alternativa, mais custosa: `kubectl rollout restart deployment/api-deployment -n desafio`.)
 
 **2. Expor a API na máquina local:**
 ```bash
